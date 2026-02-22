@@ -19,13 +19,15 @@ export const protectRoute = async (req, res, next) => {
         .json({ message: "Unauthorized: Token is invalid" });
     }
 
-    const user = User.findById(decoded.userId).select("-password");
+    const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
 
     req.user = user;
+
+    next();
   } catch (error) {
     console.log("Error in Protected Route Middleware: ", error);
     res.status(500).json({ message: "Internal Server Error" });
