@@ -5,12 +5,12 @@ const messageSchema = mongoose.Schema(
     senderId: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      req: true,
+      required: true,
     },
     receiverId: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      req: true,
+      required: true,
     },
     text: {
       type: String,
@@ -19,9 +19,9 @@ const messageSchema = mongoose.Schema(
       type: String,
     },
   },
-  { timestamp: true },
+  { timestamps: true },
 );
 
-const message = mongoose.Model("Message", messageSchema);
+const message = mongoose.model("Message", messageSchema);
 
 export default message;
