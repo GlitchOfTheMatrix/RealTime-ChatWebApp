@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { authAPI } from "../lib/api.js";
+import { useNavigate } from "react-router-dom";
+import { authAPI } from "../lib/api";
+import { useAuthStore } from "../store/useAuthStore";
 
 // This hook owns ALL the state and logic for the auth page.
 // Components just call this hook and get back what they need.
@@ -45,6 +47,9 @@ export const useAuthForm = () => {
     return true;
   };
 
+  const { setAuthUser } = useAuthStore();
+  const navigate = useNavigate();
+
   // ─── Submit handler ─────────────────────────────────────────
   const handleSubmit = async () => {
     setError("");
@@ -54,22 +59,18 @@ export const useAuthForm = () => {
 
     setLoading(true);
     try {
+      let data;
       if (tab === "login") {
-        await authAPI.login(form.email, form.password);
-        setSuccess("Welcome back! Redirecting...");
-        // TODO: navigate to chat page
-        // navigate("/chat");
+        data = await authAPI.login(form.email, form.password);
       } else {
-        await authAPI.signup(form.fullName, form.email, form.password);
-        setSuccess("Account created! Redirecting...");
-        // TODO: navigate to chat page
-        // navigate("/chat");
+        data = await authAPI.signup(form.fullName, form.email, form.password);
       }
+      // Save user to global store, then navigate to chat
+      setAuthUser(data);
+      navigate("/chat");
     } catch (err) {
-      // err.message comes from api.js which got it from your backend
       setError(err.message);
     } finally {
-      // finally always runs — whether success or error
       setLoading(false);
     }
   };
